@@ -1,5 +1,6 @@
 container_id
 .DS_Store
 openrefine-*.gz
-openrefine-3.0-beta
+openrefine-3.*
 OpenRefine
+/data
