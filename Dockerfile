@@ -1,14 +1,14 @@
-FROM java:8-jre-alpine
+FROM cdue/nginx-subs-filter:latest
 
-ENV OPENREFINE_VERSION 3.3-beta
-ENV OPENREFINE_FILE openrefine-linux-${OPENREFINE_VERSION}.tar.gz
+RUN mkdir -p /usr/share/man/man1/
+RUN apt-get update && apt-get install -y curl jq tar procps default-jdk vim
 
 WORKDIR /app
 
-COPY ${OPENREFINE_FILE} /app
+ENV OPENREFINE_VERSION 3.2
+ENV OPENREFINE_FILE openrefine-linux-${OPENREFINE_VERSION}.tar.gz
 
-RUN set -xe && apk --update add bash curl jq tar
-
+RUN curl -O -L https://github.com/OpenRefine/OpenRefine/releases/download/$OPENREFINE_VERSION/$OPENREFINE_FILE
 RUN tar xzf ${OPENREFINE_FILE} --strip 1
 
 COPY refine /app
@@ -16,20 +16,9 @@ COPY refine /app
 VOLUME /data
 WORKDIR /data
 
-# Nginx
-#RUN apk update \
-#  && apk add nginx 	
-#  && apk clean \
-#  && rm -rf /var/lib/apt/lists/
-
-RUN apk update && apk add nginx netcat	
-RUN mkdir -p /run/nginx
-
-COPY server.conf /etc/nginx/sites-enabled/openrefine.conf
-
-#RUN rm /etc/nginx/sites-enabled/default
-
-EXPOSE 3333
+RUN sed -i '1iload_module modules/ngx_http_subs_filter_module.so;' /etc/nginx/nginx.conf
+COPY server.conf /etc/nginx/conf.d/openrefine.conf
+RUN rm /etc/nginx/conf.d/default.conf
 
 #ENTRYPOINT ["/app/refine","-m", "2048m"]
 #CMD ["-i", "0.0.0.0", "-d", "/data"]
