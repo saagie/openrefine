@@ -1,4 +1,4 @@
-FROM cdue/nginx-subs-filter:latest
+FROM saagie/nginx-subs-filter:1.16.1
 
 RUN mkdir -p /usr/share/man/man1/
 RUN apt-get update && apt-get install -y curl jq tar procps default-jdk vim
