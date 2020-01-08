@@ -1,7 +1,6 @@
-FROM saagie/nginx-subs-filter:1.16.1
+FROM openjdk:8-jre-stretch
 
-RUN mkdir -p /usr/share/man/man1/
-RUN apt-get update && apt-get install -y curl jq tar procps default-jdk vim
+RUN apt-get update && apt-get install -y curl jq tar
 
 WORKDIR /app
 
@@ -16,14 +15,11 @@ COPY refine /app
 VOLUME /data
 WORKDIR /data
 
-RUN sed -i '1iload_module modules/ngx_http_subs_filter_module.so;' /etc/nginx/nginx.conf
-COPY server.conf /etc/nginx/conf.d/openrefine.conf
-RUN rm /etc/nginx/conf.d/default.conf
+RUN sed -i 's:CLASSPATH="\$REFINE_CLASSES_DIR\${SEP}\$REFINE_LIB_DIR\/\*":add_option "-Drefine.context_path=/totoq"\nCLASSPATH="\$REFINE_CLASSES_DIR\${SEP}\$REFINE_LIB_DIR\/\*":g' /app/refine
 
-#ENTRYPOINT ["/app/refine","-m", "2048m"]
-#CMD ["-i", "0.0.0.0", "-d", "/data"]
+EXPOSE 3333
 
 ADD entrypoint.sh /entrypoint.sh
-RUN chmod 777 /entrypoint.sh
+RUN chmod 744 /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]

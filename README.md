@@ -2,21 +2,30 @@
 
 > Original Dockerfile from https://github.com/vimagick/dockerfiles/tree/master/openrefine
 
-## Pre-build
-
-Copy the Linux dist of OpenRefine in the directory (download page: https://github.com/OpenRefine/OpenRefine/releases).
-
-> The script `refine` is provided due to a problem with the `grep` command.
-
 ## Build
 
 ```sh
-./docker.sh build
+docker build -t saagie/openrefine:tag .
 ```
 
 ## Push
 
 ```sh
-./docker.sh push <your docker id> <version>
+docker push <your docker id> <version>
+```
+
+
+## Usage
+
+### Basic usage
+You can run openrefine on http://localhost:3333/ with: 
+```sh
+docker run --rm -p 3333:3333 --name openrefine saagie/openrefine:tag 
+```
+
+### Advanced usage
+You can run openrefine on a url different than `/`, for example: http://localhost:3333/refine with:
+```sh
+docker run --rm -p 3333:3333 --name openrefine --env CONTEXT_PATH=/refine  saagie/openrefine:tag 
 ```
 

@@ -1,10 +1,12 @@
 #!/bin/bash
 
-# Remove first / if SAAGIE_BASE_PATH starts with one
-if [[ $SAAGIE_BASE_PATH == /* ]]; then
-    export SAAGIE_BASE_PATH=$(echo $SAAGIE_BASE_PATH | sed '0,/\// s/\///')
+# Remove first / if CONTEXT_PATH starts with one
+if [[ $CONTEXT_PATH == /* ]]; then
+    export CONTEXT_PATH=$(echo $CONTEXT_PATH | sed '0,/\// s/\///')
 fi
 
-sed -i 's:SAAGIE_BASE_PATH:'"$SAAGIE_BASE_PATH"':g' /etc/nginx/conf.d/openrefine.conf
-nginx
-/app/refine -m 2048m -i 0.0.0.0 -d /data
+# As refine script doesn't handle this refine.context_path parameter (managed by refine server), hack this script so that it can handle this option.
+sed -i 's:CLASSPATH="\$REFINE_CLASSES_DIR\${SEP}\$REFINE_LIB_DIR\/\*":add_option "-Drefine.context_path=/'$CONTEXT_PATH'"\nCLASSPATH="\$REFINE_CLASSES_DIR\${SEP}\$REFINE_LIB_DIR\/\*":g' /app/refine
+
+
+/app/refine -m 2048m -i 0.0.0.0 -d /data 
