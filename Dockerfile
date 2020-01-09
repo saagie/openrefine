@@ -10,8 +10,6 @@ ENV OPENREFINE_FILE openrefine-linux-${OPENREFINE_VERSION}.tar.gz
 RUN curl -O -L https://github.com/OpenRefine/OpenRefine/releases/download/$OPENREFINE_VERSION/$OPENREFINE_FILE
 RUN tar xzf ${OPENREFINE_FILE} --strip 1
 
-COPY refine /app
-
 VOLUME /data
 WORKDIR /data
 
